@@ -1,0 +1,39 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/KuldeepMSV/jenkins-maven-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Verify Artifact') {
+            steps {
+                sh 'ls -la target'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t jenkins-maven-app:${BUILD_NUMBER} .'
+            }
+        }
+
+        stage('Verify Docker Image') {
+            steps {
+                sh 'docker images | grep jenkins-maven-app'
+            }
+        }
+
+    }
+}
